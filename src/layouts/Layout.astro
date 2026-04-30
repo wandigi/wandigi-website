@@ -1,0 +1,56 @@
+---
+import '../styles/global.css';
+
+// Mendefinisikan properti (props) yang bisa diterima oleh Layout ini
+interface Props {
+	title: string;
+	description?: string;
+}
+
+const { 
+	title, 
+	description = "WanDigi - The Agentic Local Growth System. Customer Acquisition Partner untuk bisnis jasa lokal." 
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="id">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content={description} />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>{title}</title>
+	</head>
+	<body class="bg-slate-50 flex flex-col min-h-screen">
+		<!-- Tempat Navbar nanti -->
+		<header class="w-full bg-white shadow-sm py-4">
+			<div class="container mx-auto px-4 md:px-8 flex justify-between items-center">
+				<div class="font-bold text-2xl text-wandigi-blue tracking-tight">Wan<span class="text-wandigi-orange">Digi</span></div>
+				<nav class="hidden md:flex gap-6 items-center font-medium text-slate-600">
+					<a href="/framework" class="hover:text-wandigi-blue transition-colors">Framework</a>
+					<a href="/layanan" class="hover:text-wandigi-blue transition-colors">Layanan</a>
+					<a href="/solusi" class="hover:text-wandigi-blue transition-colors">Solusi</a>
+					<a href="/studi-kasus" class="hover:text-wandigi-blue transition-colors">Studi Kasus</a>
+				</nav>
+				<div>
+					<a href="/audit" class="px-5 py-2.5 bg-wandigi-orange text-white text-sm font-semibold rounded-md shadow-sm hover:bg-orange-600 transition-colors">
+						Free Audit
+					</a>
+				</div>
+			</div>
+		</header>
+
+		<!-- Tempat Konten Utama Disuntikkan -->
+		<main class="flex-grow">
+			<slot />
+		</main>
+
+		<!-- Tempat Footer nanti -->
+		<footer class="w-full bg-wandigi-blue text-white py-8 mt-auto">
+			<div class="container mx-auto px-4 text-center text-sm opacity-80">
+				&copy; {new Date().getFullYear()} WanDigi. All rights reserved.
+			</div>
+		</footer>
+	</body>
+</html>

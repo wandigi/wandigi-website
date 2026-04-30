@@ -9,8 +9,8 @@
   --color-wandigi-orange: #FC6701;
 
   /* Registrasi Font Custom */
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-heading: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'MontserratInterInter', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Inter', ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Setelan Global Base - Otomatis berlaku di semua halaman */

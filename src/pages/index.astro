@@ -1,22 +1,17 @@
 ---
-import '../styles/global.css';
+import Layout from '../layouts/Layout.astro';
 ---
 
-<html lang="id">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<title>WanDigi | The Agentic Local Growth System</title>
-	</head>
-	<body class="bg-slate-50 min-h-screen flex items-center justify-center">
-		<div class="text-center">
-			<!-- Perhatikan kita membuang class text-wandigi-blue dan font-bold karena sudah diatur otomatis di global.css -->
-			<h1 class="text-4xl mb-4">Infrastruktur WanDigi Aktif</h1>
-			<p class="text-lg text-slate-600 mb-6">Don't just rank. Be the answer and the action.</p>
-			<button class="px-6 py-3 bg-wandigi-orange text-white font-semibold rounded-lg shadow-md hover:bg-orange-600 transition-colors">
-				Free Audit Dummy
-			</button>
-		</div>
-	</body>
-</html>
+<Layout title="WanDigi | The Agentic Local Growth System">
+	<section class="flex flex-col items-center justify-center py-24 px-4 text-center">
+		<h1 class="text-4xl md:text-5xl lg:text-6xl max-w-4xl mx-auto leading-tight mb-6">
+			Don't just rank. Be the <span class="text-wandigi-orange">answer</span> and the <span class="text-wandigi-orange">action</span>.
+		</h1>
+		<p class="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-10">
+			Kami membangun mesin akuisisi pelanggan yang membuat bisnis lokal Anda direkomendasikan oleh AI dan dipilih langsung melalui alat bantu interaktif.
+		</p>
+		<a href="/audit" class="px-8 py-4 bg-wandigi-blue text-white font-semibold rounded-lg shadow-lg hover:bg-blue-800 transition-colors text-lg">
+			Mulai Analisis Visibilitas AI
+		</a>
+	</section>
+</Layout>
