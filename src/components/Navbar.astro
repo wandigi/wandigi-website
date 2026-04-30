@@ -3,51 +3,72 @@
 <header class="w-full bg-white shadow-sm relative z-50">
     <div class="max-w-7xl mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
         
-        <!-- 1. Kiri: Logo -->
+        <!-- Area Logo -->
         <a href="/" class="flex items-center shrink-0">
             <img src="/wandigi-seo-logo.webp" alt="WanDigi Logo" class="h-10 w-auto" />
         </a>
 
-        <!-- 2. Tengah: Menu Navigasi (Aktif di layar md / 768px ke atas) -->
-        <nav class="hidden md:flex gap-6 lg:gap-8 items-center font-medium text-slate-600">
+        <!-- Menu Tengah: Kontrol via CSS murni di bawah -->
+        <nav class="desktop-nav gap-8 items-center font-medium text-slate-600">
             <a href="/framework" class="hover:text-wandigi-blue transition-colors">Framework</a>
             <a href="/layanan" class="hover:text-wandigi-blue transition-colors">Layanan</a>
             <a href="/solusi" class="hover:text-wandigi-blue transition-colors">Solusi</a>
             <a href="/studi-kasus" class="hover:text-wandigi-blue transition-colors">Studi Kasus</a>
         </nav>
 
-        <!-- 3. Kanan: Tombol & Hamburger Menu -->
-        <div class="flex items-center gap-3 shrink-0">
-            <!-- Tombol CTA (Tampil Penuh) -->
-            <a href="/audit" class="px-4 py-2 lg:px-6 lg:py-2.5 bg-wandigi-orange text-white text-sm font-semibold rounded-md shadow-sm hover:bg-orange-600 transition-colors">
+        <!-- Area Kanan -->
+        <div class="flex items-center gap-4">
+            <a href="/audit" class="px-6 py-2.5 bg-wandigi-orange text-white text-sm font-semibold rounded-md shadow-sm hover:bg-orange-600 transition-colors">
                 Free Audit
             </a>
             
-            <!-- Tombol Hamburger (Akan HILANG jika layar >= 768px) -->
-            <button id="menu-toggle" class="flex md:hidden items-center justify-center p-1 text-slate-600 hover:text-wandigi-blue focus:outline-none" aria-label="Toggle Menu">
-                <svg id="icon-menu" class="w-7 h-7 block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <!-- Hamburger: Kontrol via CSS murni di bawah -->
+            <button id="menu-toggle" class="mobile-hamburger-btn items-center justify-center p-1 text-slate-600 hover:text-wandigi-blue focus:outline-none">
+                <svg id="icon-menu" class="w-7 h-7 block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
-                <svg id="icon-close" class="w-7 h-7 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg id="icon-close" class="w-7 h-7 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
         </div>
     </div>
 
-    <!-- Menu Dropdown Mobile -->
-    <div id="mobile-menu" class="hidden md:hidden w-full bg-white border-t border-slate-100 shadow-lg absolute left-0 right-0 top-full">
+    <!-- Dropdown Mobile -->
+    <div id="mobile-menu" class="hidden w-full bg-white border-t border-slate-100 shadow-lg absolute left-0 right-0 top-full">
         <nav class="flex flex-col px-6 py-4 gap-2 font-medium text-slate-600">
-            <a href="/framework" class="hover:text-wandigi-blue transition-colors py-2 border-b border-slate-50">Framework</a>
-            <a href="/layanan" class="hover:text-wandigi-blue transition-colors py-2 border-b border-slate-50">Layanan</a>
-            <a href="/solusi" class="hover:text-wandigi-blue transition-colors py-2 border-b border-slate-50">Solusi</a>
-            <a href="/studi-kasus" class="hover:text-wandigi-blue transition-colors py-2">Studi Kasus</a>
+            <a href="/framework" class="py-2 border-b border-slate-50">Framework</a>
+            <a href="/layanan" class="py-2 border-b border-slate-50">Layanan</a>
+            <a href="/solusi" class="py-2 border-b border-slate-50">Solusi</a>
+            <a href="/studi-kasus" class="py-2">Studi Kasus</a>
             <a href="/audit" class="sm:hidden block text-center px-6 py-3 bg-wandigi-orange text-white text-sm font-semibold rounded-md shadow-sm mt-2">
                 Free Audit
             </a>
         </nav>
     </div>
 </header>
+
+<style>
+    /* CSS MURNI: Tidak bergantung pada kompilasi Tailwind untuk responsive toggle */
+    
+    /* 1. Sembunyikan Nav Tengah dan Tampilkan Hamburger di layar HP/Tablet */
+    .desktop-nav {
+        display: none;
+    }
+    .mobile-hamburger-btn {
+        display: flex;
+    }
+
+    /* 2. Saat layar mencapai Desktop (768px ke atas) */
+    @media (min-width: 768px) {
+        .desktop-nav {
+            display: flex; /* Paksa muncul */
+        }
+        .mobile-hamburger-btn {
+            display: none !important; /* Paksa hilang */
+        }
+    }
+</style>
 
 <script>
     const menuToggle = document.getElementById('menu-toggle');
@@ -62,9 +83,8 @@
             iconClose.classList.toggle('hidden');
         });
 
-        // Event listener diubah ke 768px menyesuaikan kelas 'md' Tailwind
         window.addEventListener('resize', () => {
-            if (window.innerWidth >= 768) { 
+            if (window.innerWidth >= 768) {
                 mobileMenu.classList.add('hidden');
                 iconMenu.classList.remove('hidden');
                 iconClose.classList.add('hidden');
