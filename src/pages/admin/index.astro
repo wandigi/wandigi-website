@@ -46,12 +46,10 @@ if (Astro.request.method === "POST") {
 	</head>
 	<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
 		<div class="w-full max-w-md">
-			<!-- Logo WanDigi -->
 			<div class="flex justify-center mb-8">
 				<img src="/wandigi-seo-logo.webp" alt="WanDigi Logo" class="h-12 w-auto" />
 			</div>
 
-			<!-- Card Login -->
 			<div class="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
 				<div class="p-8">
 					<div class="mb-8">
@@ -59,8 +57,14 @@ if (Astro.request.method === "POST") {
 						<p class="text-slate-500 text-sm">Otorisasi akses sistem Agentic Layer</p>
 					</div>
 
-					<form class="space-y-6">
-						<!-- Input Email -->
+					{errorMessage && (
+						<div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm">
+							{errorMessage}
+						</div>
+					)}
+
+					<!-- Tambahkan method="POST" pada form -->
+					<form method="POST" class="space-y-6">
 						<div class="mb-5">
 							<label for="email" class="block text-sm font-semibold text-slate-700 mb-2">Kredensial Email</label>
 							<input 
@@ -73,7 +77,6 @@ if (Astro.request.method === "POST") {
 							/>
 						</div>
 
-						<!-- Input Password -->
 						<div class="mb-5">
 							<label for="password" class="block text-sm font-semibold text-slate-700 mb-2">Kata Sandi</label>
 							<input 
@@ -85,7 +88,6 @@ if (Astro.request.method === "POST") {
 							/>
 						</div>
 
-						<!-- Tombol Submit -->
 						<button 
 							type="submit" 
 							class="w-full bg-wandigi-orange hover:bg-orange-600 text-white font-bold py-3.5 rounded-lg shadow-lg shadow-orange-200 transition-all transform active:scale-[0.98]"
@@ -95,13 +97,11 @@ if (Astro.request.method === "POST") {
 					</form>
 				</div>
 				
-				<!-- Footer Card -->
 				<div class="bg-slate-50 px-8 py-4 border-t border-slate-100 text-center">
 					<p class="text-xs text-slate-400 font-medium uppercase tracking-widest">WanDigi Security Protocol</p>
 				</div>
 			</div>
 
-			<!-- Link Kembali -->
 			<div class="text-center mt-6">
 				<a href="/" class="text-sm text-slate-400 hover:text-wandigi-blue transition-colors font-medium">
 					&larr; Kembali ke Situs Utama
