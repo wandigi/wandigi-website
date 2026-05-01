@@ -1,0 +1,178 @@
+---
+// src/pages/admin/categories.astro
+import '../../styles/global.css';
+import { supabase } from '../../lib/supabase';
+
+// 1. PROTEKSI SESI
+const accessToken = Astro.cookies.get("sb-access-token");
+const refreshToken = Astro.cookies.get("sb-refresh-token");
+
+if (!accessToken || !refreshToken) {
+  return Astro.redirect("/admin");
+}
+
+const { data: sessionData, error: authError } = await supabase.auth.setSession({
+  access_token: accessToken.value,
+  refresh_token: refreshToken.value,
+});
+
+if (authError || !sessionData.user) {
+  return Astro.redirect("/admin");
+}
+
+const userEmail = sessionData.user.email;
+
+// 2. LOGIKA ACTION (CREATE & LOGOUT)
+let message = "";
+
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+  const action = formData.get("action");
+
+  if (action === "create") {
+    const name = formData.get("name");
+    const slug = formData.get("slug");
+    const description = formData.get("description");
+
+    const { error } = await supabase
+      .from('categories')
+      .insert([{ name, slug, description }]);
+
+    if (error) {
+      message = "Gagal: " + error.message;
+    } else {
+      return Astro.redirect("/admin/categories");
+    }
+  }
+
+  if (action === "logout") {
+    await supabase.auth.signOut();
+    Astro.cookies.delete("sb-access-token", { path: "/" });
+    Astro.cookies.delete("sb-refresh-token", { path: "/" });
+    return Astro.redirect("/admin");
+  }
+}
+
+// 3. AMBIL DATA
+const { data: categories } = await supabase
+  .from('categories')
+  .select('*')
+  .order('name', { ascending: true });
+---
+
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kategori | WanDigi CMS</title>
+</head>
+<body class="bg-slate-50 min-h-screen flex font-sans text-slate-800">
+
+    <aside class="w-64 bg-wandigi-blue text-white shrink-0 flex flex-col h-screen sticky top-0">
+        <div class="h-16 flex items-center px-6 border-b border-blue-800">
+            <span class="font-bold text-xl tracking-wide uppercase">WanDigi CMS</span>
+        </div>
+        
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+            <a href="/admin/dashboard" class="flex items-center gap-3 px-3 py-2.5 text-blue-100 hover:bg-blue-800/30 rounded-md font-medium transition-colors">
+                Dashboard
+            </a>
+            
+            <p class="px-3 text-xs font-semibold text-blue-300 uppercase tracking-wider mb-2 mt-6">Manajemen Konten</p>
+            
+            <a href="/admin/posts/create" class="flex items-center gap-3 px-3 py-2 text-blue-100 hover:bg-blue-800/30 rounded-md font-medium transition-colors">
+                + Tulis Artikel
+            </a>
+            <a href="/admin/posts" class="flex items-center gap-3 px-3 py-2 text-blue-100 hover:bg-blue-800/30 rounded-md font-medium transition-colors">
+                Semua Artikel
+            </a>
+            <a href="/admin/pages" class="flex items-center gap-3 px-3 py-2 text-blue-100 hover:bg-blue-800/30 rounded-md font-medium transition-colors">
+                Halaman Statis
+            </a>
+            <a href="/admin/categories" class="flex items-center gap-3 px-3 py-2.5 bg-blue-800/50 rounded-md text-white font-medium">
+                Kategori
+            </a>
+        </nav>
+        
+        <div class="p-4 border-t border-blue-800 bg-blue-900/20">
+            <form method="POST" class="px-3">
+                <input type="hidden" name="action" value="logout" />
+                <button type="submit" class="w-full text-left py-1.5 text-sm text-red-300 hover:text-red-100 transition-colors">
+                    Keluar Sesi
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col min-h-screen">
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8">
+            <h1 class="text-lg font-semibold text-slate-800">Manajemen Kategori</h1>
+        </header>
+
+        <div class="p-8 flex-1">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <div class="lg:col-span-1">
+                    <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm sticky top-24">
+                        <h3 class="font-bold text-slate-800 mb-4 text-sm uppercase tracking-wider">Tambah Baru</h3>
+                        {message && <p class="bg-red-50 text-red-600 p-2 rounded text-xs mb-4 border border-red-100">{message}</p>}
+                        
+                        <form method="POST" class="space-y-4">
+                            <input type="hidden" name="action" value="create" />
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Nama Kategori</label>
+                                <input name="name" type="text" class="w-full border p-2 rounded text-sm focus:border-wandigi-blue outline-none" placeholder="Contoh: SEO Surabaya" required />
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Slug (URL)</label>
+                                <input name="slug" type="text" class="w-full border p-2 rounded text-sm focus:border-wandigi-blue outline-none" placeholder="seo-surabaya" required />
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Deskripsi</label>
+                                <textarea name="description" class="w-full border p-2 rounded text-sm focus:border-wandigi-blue outline-none h-24" placeholder="Penjelasan singkat kategori..."></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-wandigi-orange text-white py-2.5 rounded font-bold hover:bg-orange-600 transition-all text-sm shadow-sm">
+                                Simpan Kategori
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-slate-50 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b">
+                                <tr>
+                                    <th class="px-6 py-4">Nama</th>
+                                    <th class="px-6 py-4">Slug</th>
+                                    <th class="px-6 py-4 text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                {categories?.map((cat) => (
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="px-6 py-4">
+                                            <p class="font-semibold text-slate-700">{cat.name}</p>
+                                            <p class="text-[10px] text-slate-400 truncate max-w-xs">{cat.description}</p>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-slate-500">{cat.slug}</td>
+                                        <td class="px-6 py-4 text-right">
+                                            <button class="text-red-500 text-xs font-bold hover:underline">Hapus</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {(!categories || categories.length === 0) && (
+                                    <tr>
+                                        <td colspan="3" class="px-6 py-12 text-center text-slate-400 italic text-sm">Belum ada data kategori.</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</body>
+</html>

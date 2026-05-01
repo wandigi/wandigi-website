@@ -1,0 +1,106 @@
+---
+// src/pages/admin/dashboard.astro
+import '../../styles/global.css';
+import { supabase } from '../../lib/supabase';
+
+// 1. SSR Auth Guard
+const accessToken = Astro.cookies.get("sb-access-token");
+const refreshToken = Astro.cookies.get("sb-refresh-token");
+
+if (!accessToken || !refreshToken) {
+  return Astro.redirect("/admin");
+}
+
+const { data: sessionData, error } = await supabase.auth.setSession({
+  access_token: accessToken.value,
+  refresh_token: refreshToken.value,
+});
+
+if (error || !sessionData.user) {
+  Astro.cookies.delete("sb-access-token", { path: "/" });
+  Astro.cookies.delete("sb-refresh-token", { path: "/" });
+  return Astro.redirect("/admin");
+}
+
+const userEmail = sessionData.user.email;
+
+// 2. Logout Handler
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+  if (formData.get("action") === "logout") {
+    await supabase.auth.signOut();
+    Astro.cookies.delete("sb-access-token", { path: "/" });
+    Astro.cookies.delete("sb-refresh-token", { path: "/" });
+    return Astro.redirect("/admin");
+  }
+}
+---
+
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <title>CMS | WanDigi</title>
+</head>
+<body class="bg-slate-50 min-h-screen flex font-sans text-slate-800">
+
+    <aside class="w-64 bg-wandigi-blue text-white shrink-0 flex flex-col h-screen sticky top-0">
+        <div class="h-16 flex items-center px-6 border-b border-blue-800">
+            <span class="font-bold text-xl tracking-wide">WanDigi CMS</span>
+        </div>
+        
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+            <a href="/admin/dashboard" class="flex items-center gap-3 px-3 py-2.5 bg-blue-800/50 rounded-md text-white font-medium">
+                Dashboard
+            </a>
+            
+            <p class="px-3 text-xs font-semibold text-blue-300 uppercase tracking-wider mb-2 mt-6">Manajemen Konten</p>
+            
+            <a href="/admin/posts/create" class="flex items-center gap-3 px-3 py-2 text-blue-100 hover:bg-blue-800/30 rounded-md font-medium transition-colors">
+                + Tulis Artikel
+            </a>
+            <a href="/admin/posts" class="flex items-center gap-3 px-3 py-2 text-blue-100 hover:bg-blue-800/30 rounded-md font-medium transition-colors">
+                Semua Artikel
+            </a>
+            <a href="/admin/pages" class="flex items-center gap-3 px-3 py-2 text-blue-100 hover:bg-blue-800/30 rounded-md font-medium transition-colors">
+                Halaman Statis
+            </a>
+            <a href="/admin/categories" class="flex items-center gap-3 px-3 py-2 text-blue-100 hover:bg-blue-800/30 rounded-md font-medium transition-colors">
+                Kategori
+            </a>
+        </nav>
+        
+        <div class="p-4 border-t border-blue-800 bg-blue-900/20">
+            <div class="mb-3 px-3">
+                <p class="text-xs text-blue-300 mb-1">Admin Aktif:</p>
+                <p class="text-sm font-medium truncate" title={userEmail}>{userEmail}</p>
+            </div>
+            <form method="POST" class="px-3">
+                <input type="hidden" name="action" value="logout" />
+                <button type="submit" class="w-full text-left py-1.5 text-sm text-red-300 hover:text-red-100 transition-colors">
+                    Keluar Sesi
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col min-h-screen">
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8">
+            <h1 class="text-lg font-semibold text-slate-800">Dashboard</h1>
+            <a href="/" target="_blank" class="text-sm font-medium text-wandigi-blue hover:underline">Lihat Website &rarr;</a>
+        </header>
+
+        <div class="p-8 flex-1">
+            <div class="bg-white rounded-lg border border-slate-200 p-8 shadow-sm max-w-3xl">
+                <h2 class="text-2xl font-bold text-slate-800 mb-4">Pusat Penulisan WanDigi</h2>
+                <p class="text-slate-600 mb-8">Sistem manajemen konten siap digunakan. Pilih menu di sidebar untuk mulai mempublikasikan aset *Topical Authority* Anda.</p>
+                
+                <a href="/admin/posts/create" class="inline-block px-5 py-2.5 bg-wandigi-orange text-white font-medium rounded-md hover:bg-orange-600 transition-colors shadow-sm">
+                    Mulai Tulis Artikel
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

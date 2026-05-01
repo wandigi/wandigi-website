@@ -5,7 +5,6 @@ import { supabase } from '../../lib/supabase';
 
 let errorMessage = "";
 
-// Cek apakah ada request POST dari form login
 if (Astro.request.method === "POST") {
   try {
     const data = await Astro.request.formData();
@@ -20,9 +19,20 @@ if (Astro.request.method === "POST") {
       });
 
       if (error) {
-        // Menampilkan pesan error asli dari Supabase agar kita tahu penyebab pastinya
+        // Jika gagal, tampilkan error
         errorMessage = error.message; 
         console.log("Supabase Error:", error.message);
+      } else {
+        // 2. JIKA SUKSES: Blok ini yang sebelumnya hilang!
+        console.log("Login sukses! Mengarahkan ke dashboard...");
+        
+        // Simpan sesi ke dalam Cookies browser
+        const { access_token, refresh_token } = authData.session;
+        Astro.cookies.set("sb-access-token", access_token, { path: "/", httpOnly: true, secure: true });
+        Astro.cookies.set("sb-refresh-token", refresh_token, { path: "/", httpOnly: true, secure: true });
+
+        // 3. Paksa browser pindah ke halaman dashboard
+        return Astro.redirect("/admin/dashboard");
       }
     }
   } catch (error) {
