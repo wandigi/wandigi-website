@@ -20,15 +20,9 @@ if (Astro.request.method === "POST") {
       });
 
       if (error) {
-        errorMessage = "Kredensial salah atau tidak terdaftar.";
-      } else {
-        // 2. Set Cookies untuk sesi (Supabase menggunakan access_token & refresh_token)
-        const { access_token, refresh_token } = authData.session;
-        Astro.cookies.set("sb-access-token", access_token, { path: "/", httpOnly: true, secure: true });
-        Astro.cookies.set("sb-refresh-token", refresh_token, { path: "/", httpOnly: true, secure: true });
-
-        // 3. Redirect ke dashboard admin setelah berhasil login
-        return Astro.redirect("/admin/dashboard");
+        // Menampilkan pesan error asli dari Supabase agar kita tahu penyebab pastinya
+        errorMessage = error.message; 
+        console.log("Supabase Error:", error.message);
       }
     }
   } catch (error) {

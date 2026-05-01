@@ -1,13 +1,14 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
+import node from '@astrojs/node';
 
-// https://astro.build/config
 export default defineConfig({
-  // WAJIB: Mengubah output menjadi 'server' agar bisa menjalankan logic di server
-  output: 'server', 
-  
+  output: 'server',
   vite: {
     plugins: [tailwindcss()]
-  }
+  },
+  adapter: node({
+    mode: 'standalone'
+  })
 });
